@@ -1,0 +1,598 @@
+/* =========================================
+   1. ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ И ТЕМЫ
+   ========================================= */
+:root {
+    /* Базовые шрифты */
+    --font-main: 'Nunito', sans-serif;
+    --font-header: 'Montserrat', sans-serif;
+
+    /* Стандартная тема (Светлая) */
+    --bg-body: #f4f6f9;
+    --card-bg: #ffffff;
+    --text-main: #2d3436;
+    --text-muted: #636e72;
+    --border-color: #dfe6e9;
+    --grid-line: #dfe6e9;
+    --primary: #5B68CA;
+    --shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+/* Темная тема */
+[data-theme="dark"] {
+    --bg-body: #1a1a1a;
+    --card-bg: #2d2d2d;
+    --text-main: #ececec;
+    --text-muted: #a0a0a0;
+    --border-color: #444;
+    --grid-line: #444;
+    --primary: #8c9eff;
+    --shadow: 0 4px 12px rgba(0,0,0,0.4);
+}
+
+/* === ЦВЕТНЫЕ ТЕМЫ === */
+
+/* 1. Мятная */
+[data-theme="mint"] {
+    --bg-body: #e0f7f3;
+    --card-bg: #ffffff;
+    --text-main: #004d40;
+    --text-muted: #00695c;
+    --border-color: #b2dfdb;
+    --grid-line: #b2dfdb;
+    --primary: #60D5AC;
+    --shadow: 0 4px 12px rgba(96, 213, 172, 0.2);
+}
+
+/* 2. Персиковая */
+[data-theme="peach"] {
+    --bg-body: #fff8e1;
+    --card-bg: #ffffff;
+    --text-main: #5d4037;
+    --text-muted: #8d6e63;
+    --border-color: #ffe0b2;
+    --grid-line: #ffe0b2;
+    --primary: #FFCA73;
+    --shadow: 0 4px 12px rgba(255, 202, 115, 0.2);
+}
+
+/* 3. Лаймовая */
+[data-theme="lime"] {
+    --bg-body: #f1f8e9;
+    --card-bg: #ffffff;
+    --text-main: #33691e;
+    --text-muted: #558b2f;
+    --border-color: #dcedc8;
+    --grid-line: #dcedc8;
+    --primary: #AEF26D;
+    --shadow: 0 4px 12px rgba(174, 242, 109, 0.2);
+}
+
+/* 4. Синяя */
+[data-theme="blue"] {
+    --bg-body: #e3f2fd;
+    --card-bg: #ffffff;
+    --text-main: #0d47a1;
+    --text-muted: #1565c0;
+    --border-color: #bbdefb;
+    --grid-line: #bbdefb;
+    --primary: #6A93D4;
+    --shadow: 0 4px 12px rgba(106, 147, 212, 0.2);
+}
+
+/* 5. Фиолетовая */
+[data-theme="purple"] {
+    --bg-body: #f3e5f5;
+    --card-bg: #ffffff;
+    --text-main: #4a148c;
+    --text-muted: #7b1fa2;
+    --border-color: #e1bee7;
+    --grid-line: #e1bee7;
+    --primary: #956BD6;
+    --shadow: 0 4px 12px rgba(149, 107, 214, 0.2);
+}
+
+/* 6. Розовая (ИСПРАВЛЕННАЯ) */
+[data-theme="pink"] {
+    --bg-body: #80394F;      /* Темный фон страницы */
+    --card-bg: #ffffff;      /* БЕЛЫЙ фон карточек и календаря */
+    --text-main: #2d3436;    /* Темный текст для контраста на белом */
+    --text-muted: #636e72;
+
+    /* ВАЖНО: Сетка теперь РОЗОВАЯ (#ff8fa3), а не белая, чтобы ее было видно на белом фоне карточек */
+    --border-color: #d6004f; /* Рамка вокруг всего календаря */
+    --grid-line: #ff8fa3;    /* Линии сетки внутри календаря */
+
+    --primary: #d6004f;
+    --shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+body {
+    background-color: var(--bg-body);
+    color: var(--text-main);
+    font-family: var(--font-main);
+    transition: background-color 0.4s ease, color 0.4s ease;
+}
+
+/* =========================================
+   2. ПЕРЕКЛЮЧАТЕЛЬ ТЕМ (UI)
+   ========================================= */
+.theme-switcher-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 9999;
+    background: var(--card-bg);
+    padding: 10px;
+    border-radius: 50px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    border: 1px solid var(--border-color);
+    transition: all 0.3s ease;
+}
+
+.theme-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-right: 5px;
+    font-family: var(--font-header);
+}
+
+.theme-btn {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: transform 0.2s, border-color 0.2s;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.theme-btn:hover {
+    transform: scale(1.15);
+}
+
+.theme-btn.active {
+    border-color: var(--text-main);
+    transform: scale(1.2);
+    box-shadow: 0 0 0 2px var(--bg-body);
+}
+
+/* Цвета кнопок */
+.btn-light { background-color: #f4f6f9; }
+.btn-dark { background-color: #2d2d2d; }
+.btn-mint { background-color: #60D5AC; }
+.btn-peach { background-color: #FFCA73; }
+.btn-lime { background-color: #AEF26D; }
+.btn-blue { background-color: #6A93D4; }
+.btn-purple { background-color: #956BD6; }
+.btn-pink { background-color: #F19898; }
+
+/* =========================================
+   3. КАЛЕНДАРЬ И СЕТКА
+   ========================================= */
+
+.calendar-wrapper {
+    background-color: var(--card-bg);
+    border-radius: 16px;
+    padding: 20px;
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow);
+    height: 75vh;
+    max-height: 850px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: background 0.3s ease, border 0.3s ease, box-shadow 0.3s ease;
+}
+
+#calendar {
+    flex-grow: 1;
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+}
+
+/* Скроллбар */
+#calendar::-webkit-scrollbar {
+    width: 8px;
+}
+#calendar::-webkit-scrollbar-track {
+    background: var(--bg-body);
+    border-radius: 4px;
+}
+#calendar::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 4px;
+}
+#calendar::-webkit-scrollbar-thumb:hover {
+    background: var(--text-muted);
+}
+
+/* Основной контейнер календаря */
+.fc {
+    background-color: var(--card-bg) !important;
+}
+
+/* Заголовки дней недели */
+.fc-col-header {
+    background: var(--card-bg) !important;
+}
+.fc-col-header-cell {
+    background: var(--card-bg) !important;
+    border-color: var(--grid-line) !important;
+}
+
+/* Сетка и границы */
+.fc-theme-standard td,
+.fc-theme-standard th {
+    border-color: var(--grid-line) !important;
+}
+
+/* Фон для ячеек календаря */
+.fc-daygrid-day {
+    background-color: var(--card-bg) !important;
+    border: 1px solid var(--grid-line) !important;
+    transition: background-color 0.3s ease;
+}
+
+/* Фон для временной сетки (неделя/день) */
+.fc-timegrid .fc-daygrid-day,
+.fc-timegrid-col {
+    background-color: var(--card-bg) !important;
+}
+
+.fc-timegrid-slot {
+    background-color: var(--card-bg) !important;
+}
+
+/* Заголовки дней недели */
+.fc-col-header-cell {
+    background: linear-gradient(135deg, var(--card-bg) 0%, var(--bg-body) 100%);
+    border-bottom: 2px solid var(--primary) !important;
+    padding: 12px 0;
+    transition: all 0.3s ease;
+}
+
+.fc-col-header-cell .fc-col-header-cell-cushion {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-decoration: none !important;
+    font-family: var(--font-header);
+    font-weight: 700;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    padding: 8px 0;
+    color: var(--text-main);
+    transition: color 0.3s ease;
+}
+
+/* Номер дня в ячейке */
+.fc-daygrid-day-number {
+    color: var(--text-main);
+    font-weight: 500;
+    font-size: 1rem;
+    padding: 8px;
+    text-decoration: none;
+    display: block;
+    width: auto;
+    height: auto;
+    margin: 0;
+    justify-content: flex-start;
+    align-items: flex-start;
+}
+
+/* Сегодняшний день */
+.fc-day-today {
+    background-color: var(--primary-light, rgba(91, 104, 202, 0.15)) !important;
+    border: 2px solid var(--primary) !important;
+    z-index: 1;
+    position: relative;
+}
+
+/* Для розовой темы - свой оттенок */
+[data-theme="pink"] .fc-day-today {
+    background-color: rgba(214, 0, 79, 0.12) !important;
+}
+
+/* Для мятной темы */
+[data-theme="mint"] .fc-day-today {
+    background-color: rgba(96, 213, 172, 0.15) !important;
+}
+
+/* Для персиковой темы */
+[data-theme="peach"] .fc-day-today {
+    background-color: rgba(255, 202, 115, 0.15) !important;
+}
+
+/* Для лаймовой темы */
+[data-theme="lime"] .fc-day-today {
+    background-color: rgba(174, 242, 109, 0.15) !important;
+}
+
+/* Для синей темы */
+[data-theme="blue"] .fc-day-today {
+    background-color: rgba(106, 147, 212, 0.15) !important;
+}
+
+/* Для фиолетовой темы */
+[data-theme="purple"] .fc-day-today {
+    background-color: rgba(149, 107, 214, 0.15) !important;
+}
+
+/* Для темной темы */
+[data-theme="dark"] .fc-day-today {
+    background-color: rgba(140, 158, 255, 0.15) !important;
+}
+
+.fc-dayGridMonth-view .fc-day-today::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 4px;
+    background-color: var(--primary);
+    z-index: 2;
+}
+
+.fc-day-today .fc-daygrid-day-number {
+    background-color: transparent !important;
+    color: var(--primary) !important;
+    font-weight: 800;
+    font-size: 1.05rem;
+}
+
+/* Кнопки навигации */
+.fc .fc-button-primary {
+    background-color: transparent !important;
+    border: 1px solid var(--border-color) !important;
+    color: var(--text-main) !important;
+    font-weight: 600;
+    font-size: 0.95rem;
+    border-radius: 6px;
+    text-transform: capitalize;
+    padding: 6px 12px;
+    transition: all 0.2s;
+}
+
+.fc .fc-button-primary:hover {
+    background-color: var(--border-color) !important;
+}
+
+.fc .fc-button-active {
+    background-color: var(--primary) !important;
+    border-color: var(--primary) !important;
+    color: #fff !important;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+}
+
+.fc-toolbar-title {
+    font-size: 1.4rem !important;
+    font-weight: 700 !important;
+    color: var(--text-main);
+    font-family: var(--font-header);
+}
+
+/* Альтернативная фоновая подсветка строк времени */
+.fc-timegrid-slot-minor {
+    background-color: transparent !important;
+}
+
+/* Оси и скроллы */
+.fc-timegrid-axis-chunk,
+.fc-timegrid-axis-frame {
+    background: var(--card-bg) !important;
+    border-color: var(--grid-line) !important;
+}
+
+/* Боковая панель с часами */
+.fc-timegrid-axis {
+    background-color: var(--card-bg) !important;
+}
+
+/* =========================================
+   4. СОБЫТИЯ (ЗАДАЧИ)
+   ========================================= */
+.fc-event {
+    border: none;
+    border-radius: 6px;
+    padding: 4px 6px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.1s, box-shadow 0.2s;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    overflow: visible;
+}
+
+.fc-event:hover {
+    transform: scale(1.02);
+    z-index: 10;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+/* Принудительно делаем текст событий белым в режиме Месяц для темных тем */
+[data-theme="pink"] .fc-daygrid-event .fc-event-title,
+[data-theme="pink"] .fc-daygrid-event {
+    color: #ffffff !important;
+}
+
+/* Также для темной темы, если там тоже есть проблемы */
+[data-theme="dark"] .fc-daygrid-event .fc-event-title,
+[data-theme="dark"] .fc-daygrid-event {
+    color: #ffffff !important;
+}
+
+/* Убеждаемся, что заголовок события внутри карточки тоже белый */
+.fc-daygrid-event .fc-event-title {
+    color: inherit;
+}
+
+.custom-event-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.event-check-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 6px;
+    flex-shrink: 0;
+    font-size: 1.1em;
+    transition: transform 0.2s, background-color 0.2s;
+    padding: 2px;
+    border-radius: 4px;
+}
+
+.event-check-btn:hover {
+    background-color: rgba(255,255,255,0.3);
+    transform: scale(1.1);
+}
+
+.event-check-btn i {
+    pointer-events: none;
+}
+
+/* Временные метки */
+.fc-timegrid-slot-label-cushion {
+    color: var(--text-main);
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+/* Линия текущего времени */
+.fc-timegrid-now-indicator-line {
+    border-color: #ea4335;
+    border-width: 3px;
+}
+.fc-timegrid-now-indicator-arrow {
+    border-color: #ea4335;
+    background-color: #ea4335;
+}
+
+/* Заголовки в режиме Неделя/День */
+.custom-day-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    width: 100%;
+    text-decoration: none !important;
+}
+
+.header-weekday {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+    letter-spacing: 1px;
+    text-decoration: none !important;
+    font-family: var(--font-header);
+}
+
+.header-daynum {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--text-main);
+    line-height: 1;
+    text-decoration: none !important;
+    font-family: var(--font-header);
+}
+
+.fc-col-header-cell.fc-day-today .header-daynum,
+.fc-col-header-cell.fc-day-today .header-weekday {
+    color: var(--primary);
+}
+
+.fc-col-header-cell-cushion {
+    text-decoration: none !important;
+    padding: 0;
+    display: contents;
+}
+
+/* Модальные окна и другие карточки */
+.modal-content,
+.card,
+.progress-container {
+    background-color: var(--card-bg) !important;
+}
+
+/* =========================================
+   5. НОВЫЕ ПРАВИЛА: ЧЕРНЫЙ ТЕКСТ ДЛЯ КНОПОК
+   ========================================= */
+
+/* Применяем черный текст ко всем основным кнопкам (.btn, .btn-primary)
+   во ВСЕХ светлых темах, включая розовую */
+[data-theme="light"] .btn,
+[data-theme="light"] .btn-primary,
+[data-theme="light"] .btn-outline-primary,
+[data-theme="mint"] .btn,
+[data-theme="mint"] .btn-primary,
+[data-theme="mint"] .btn-outline-primary,
+[data-theme="peach"] .btn,
+[data-theme="peach"] .btn-primary,
+[data-theme="peach"] .btn-outline-primary,
+[data-theme="lime"] .btn,
+[data-theme="lime"] .btn-primary,
+[data-theme="lime"] .btn-outline-primary,
+[data-theme="blue"] .btn,
+[data-theme="blue"] .btn-primary,
+[data-theme="blue"] .btn-outline-primary,
+[data-theme="purple"] .btn,
+[data-theme="purple"] .btn-primary,
+[data-theme="purple"] .btn-outline-primary,
+[data-theme="pink"] .btn,
+[data-theme="pink"] .btn-primary,
+[data-theme="pink"] .btn-outline-primary {
+    color: #000000 !important;
+    /* Убираем белые тени текста, если они были */
+    text-shadow: none !important;
+}
+
+/* Если у кнопки "Начать игру" есть специальный класс (например, .start-game-btn),
+   применяем правило еще жестче */
+[data-theme="light"] .start-game-btn,
+[data-theme="mint"] .start-game-btn,
+[data-theme="peach"] .start-game-btn,
+[data-theme="lime"] .start-game-btn,
+[data-theme="blue"] .start-game-btn,
+[data-theme="purple"] .start-game-btn,
+[data-theme="pink"] .start-game-btn {
+    color: #000000 !important;
+    font-weight: 700;
+}
+
+/* Адапт */
+@media (max-width: 768px) {
+    .calendar-wrapper {
+        height: 70vh;
+        padding: 10px;
+    }
+
+    .fc-toolbar-title {
+        font-size: 1.1rem !important;
+    }
+
+    .theme-switcher-container {
+        bottom: 10px;
+        right: 10px;
+        padding: 8px;
+    }
+
+    .theme-label {
+        display: none;
+    }
+}
