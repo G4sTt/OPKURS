@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}Вход{% endblock %}
+
+{% block content %}
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+    <div class="card p-4 shadow-lg" style="width: 100%; max-width: 400px; background: var(--card-bg); border: 1px solid var(--border-color);">
+        <h2 class="text-center mb-4" style="color: var(--text-main);">Вход в Horizon</h2>
+
+        <!-- Отображение ошибок -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="alert alert-{{ category }} alert-dismissible fade show mb-3" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+              </div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+
+        <!-- Форма входа по почте -->
+        <form method="POST">
+            <div class="mb-3">
+                <label for="email" class="form-label" style="color: var(--text-muted);">Email</label>
+                <input type="email" class="form-control" id="email" name="email" required
+                       style="background: var(--bg-color); color: var(--text-main); border-color: var(--border-color);">
+            </div>
+            <div class="mb-3">
+                <label for="password" class="form-label" style="color: var(--text-muted);">Пароль</label>
+                <input type="password" class="form-control" id="password" name="password" required
+                       style="background: var(--bg-color); color: var(--text-main); border-color: var(--border-color);">
+            </div>
+            <button type="submit" class="btn btn-primary w-100 mb-3">Войти</button>
+        </form>
+
+        <hr style="border-color: var(--border-color);">
+
+        <!-- Кнопка Google -->
+        <a href="{{ url_for('google_login') }}" class="btn btn-outline-danger w-100 d-flex align-items-center justify-content-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M15.545 6.558a9.42 9.42 0 0 1 .139 1.626c0 2.434-.87 4.492-2.384 5.885h.002C11.978 15.292 10.158 16 8 16A8 8 0 1 1 8 0a7.689 7.689 0 0 1 5.352 2.082l-2.284 2.284A4.347 4.347 0 0 0 8 3.166c-2.087 0-3.86 1.408-4.492 3.304a4.792 4.792 0 0 0 0 3.063h.003c.635 1.893 2.405 3.301 4.492 3.301 1.078 0 2.004-.276 2.722-.764h-.003a3.702 3.702 0 0 0 1.599-2.431H8v-3.08h7.545z"/>
+            </svg>
+            Войти через Google
+        </a>
+
+        <div class="text-center mt-3" style="color: var(--text-muted);">
+            <small>Нет аккаунта? <a href="{{ url_for('register') }}" style="color: var(--primary);">Зарегистрироваться</a></small>
+        </div>
+        <div class="text-center mt-2">
+            <small><a href="{{ url_for('index') }}" style="color: var(--text-muted);">← На главную</a></small>
+        </div>
+    </div>
+</div>
+{% endblock %}

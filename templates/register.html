@@ -1,0 +1,49 @@
+    {% extends "base.html" %}
+    {% block title %}Регистрация{% endblock %}
+
+    {% block content %}
+    <div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+        <div class="card p-4 shadow-lg" style="width: 100%; max-width: 400px; background: var(--card-bg); border: 1px solid var(--border-color);">
+            <h2 class="text-center mb-4" style="color: var(--text-main);">Регистрация</h2>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+              {% if messages %}
+                {% for category, message in messages %}
+                  <div class="alert alert-{{ category }} alert-dismissible fade show mb-3" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                  </div>
+                {% endfor %}
+              {% endif %}
+            {% endwith %}
+
+            <form method="POST">
+                <div class="mb-3">
+                    <label for="name" class="form-label" style="color: var(--text-muted);">Имя</label>
+                    <input type="text" class="form-control" id="name" name="name" required
+                           style="background: var(--bg-color); color: var(--text-main); border-color: var(--border-color);">
+                </div>
+                <div class="mb-3">
+                    <label for="email" class="form-label" style="color: var(--text-muted);">Email</label>
+                    <input type="email" class="form-control" id="email" name="email" required
+                           style="background: var(--bg-color); color: var(--text-main); border-color: var(--border-color);">
+                </div>
+                <div class="mb-3">
+                    <label for="password" class="form-label" style="color: var(--text-muted);">Пароль</label>
+                    <input type="password" class="form-control" id="password" name="password" required
+                           style="background: var(--bg-color); color: var(--text-main); border-color: var(--border-color);">
+                </div>
+                <button type="submit" class="btn btn-success w-100 mb-3">Создать аккаунт</button>
+            </form>
+
+            <hr style="border-color: var(--border-color);">
+
+            <div class="text-center" style="color: var(--text-muted);">
+                <small>Уже есть аккаунт? <a href="{{ url_for('login') }}" style="color: var(--primary);">Войти</a></small>
+            </div>
+            <div class="text-center mt-2">
+                <small><a href="{{ url_for('index') }}" style="color: var(--text-muted);">← На главную</a></small>
+            </div>
+        </div>
+    </div>
+    {% endblock %}

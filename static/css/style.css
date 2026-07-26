@@ -1,0 +1,397 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@700;800&display=swap');
+
+/* =========================================
+   БАЗОВЫЕ ПЕРЕМЕННЫЕ (Светлая тема - Default)
+   ========================================= */
+:root {
+    --bg-body: #f8f9fa;
+    --text-main: #202124;
+    --text-muted: #5f6368;
+    --card-bg: #ffffff;
+    --border-color: #e0e0e0;
+    --nav-bg: #ffffff;
+    --nav-text: #202124;
+    --primary: #4285f4;
+    --primary-hover: #3367d6;
+    --grid-line: #e8eaed;
+    --shadow-sm: 0 2px 8px rgba(0,0,0,0.05);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+/* =========================================
+   ТЕМНАЯ ТЕМА (Базовая - Черно-белая)
+   ========================================= */
+[data-theme="dark"] {
+    --bg-body: #202124;
+    --text-main: #e8eaed;
+    --text-muted: #9aa0a6;
+    --card-bg: #2d2e31;
+    --border-color: #3c4043;
+    --nav-bg: #202124;
+    --nav-text: #e8eaed;
+    --primary: #8ab4f8;
+    --primary-hover: #aecbfa;
+    --grid-line: #3c4043;
+    --shadow-sm: 0 2px 8px rgba(0,0,0,0.2);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+/* =========================================
+   ЦВЕТОВЫЕ ТЕМЫ (СВЕТЛЫЙ РЕЖИМ)
+   ========================================= */
+
+/* Мятная (Mint) */
+[data-theme="light"][data-color-theme="mint"] {
+    --bg-body: #f0fdf9;
+    --text-main: #0f2922;
+    --text-muted: #3d5c52;
+    --card-bg: #ffffff;
+    --border-color: #a7f3d0;
+    --nav-bg: #ffffff;
+    --nav-text: #0f2922;
+    --primary: #60D5AC;
+    --primary-hover: #4db896;
+    --grid-line: #d1fae5;
+}
+
+/* Персиковая (Peach) */
+[data-theme="light"][data-color-theme="peach"] {
+    --bg-body: #80394F;
+    --text-main: #2c1a0f;
+    --text-muted: #5c4033;
+    --card-bg: #ffffff;
+    --border-color: #fde68a;
+    --nav-bg: #ffffff;
+    --nav-text: #2c1a0f;
+    --primary: #FFCA73;
+    --primary-hover: #ffb54b;
+    --grid-line: #fef3c7;
+}
+
+/* Лаймовая (Lime) */
+[data-theme="light"][data-color-theme="lime"] {
+    --bg-body: #f7fee7;
+    --text-main: #1a2e05;
+    --text-muted: #3f6212;
+    --card-bg: #ffffff;
+    --border-color: #d9f99d;
+    --nav-bg: #ffffff;
+    --nav-text: #1a2e05;
+    --primary: #AEF26D;
+    --primary-hover: #94d652;
+    --grid-line: #ecfccb;
+}
+
+/* Синяя (Blue) */
+[data-theme="light"][data-color-theme="blue"] {
+    --bg-body: #eff6ff;
+    --text-main: #172554;
+    --text-muted: #1e3a8a;
+    --card-bg: #ffffff;
+    --border-color: #bfdbfe;
+    --nav-bg: #ffffff;
+    --nav-text: #172554;
+    --primary: #6A93D4;
+    --primary-hover: #547bbe;
+    --grid-line: #dbeafe;
+}
+
+/* Фиолетовая (Purple) */
+[data-theme="light"][data-color-theme="purple"] {
+    --bg-body: #230033;
+    --text-main: #2e1065;
+    --text-muted: #5b21b6;
+    --card-bg: #ffffff;
+    --border-color: #ddd6fe;
+    --nav-bg: #ffffff;
+    --nav-text: #2e1065;
+    --primary: #956BD6;
+    --primary-hover: #7c52b5;
+    --grid-line: #ede9fe;
+}
+
+/* РОЗОВАЯ (Светлая) */
+[data-theme="light"][data-color-theme="pink"] {
+    --bg-body: #FFF0F5;
+    --text-main: #5D4037;
+    --text-muted: #8D6E63;
+    --card-bg: #FFE4E1;
+    --border-color: #FFC0CB;
+    --nav-bg: #FFF0F5;
+    --nav-text: #5D4037;
+    --primary: #FF69B4;
+    --primary-hover: #FF1493;
+    --grid-line: #FFD1DC;
+}
+
+/* =========================================
+   ЦВЕТОВЫЕ ТЕМЫ (ТЕМНЫЙ РЕЖИМ)
+   ========================================= */
+
+/* Мятная (Dark) */
+[data-theme="dark"][data-color-theme="mint"] {
+    --bg-body: #022c22;
+    --text-main: #ecfdf5;
+    --text-muted: #a7f3d0;
+    --card-bg: #064e3b;
+    --border-color: #047857;
+    --nav-bg: #022c22;
+    --nav-text: #ecfdf5;
+    --primary: #60D5AC;
+    --primary-hover: #8ceac9;
+    --grid-line: #065f46;
+}
+
+/* Персиковая (Dark) */
+[data-theme="dark"][data-color-theme="peach"] {
+    --bg-body: #2c1a0f;
+    --text-main: #fffbeb;
+    --text-muted: #fde68a;
+    --card-bg: #452a1a;
+    --border-color: #b45309;
+    --nav-bg: #2c1a0f;
+    --nav-text: #fffbeb;
+    --primary: #FFCA73;
+    --primary-hover: #ffe0a3;
+    --grid-line: #78350f;
+}
+
+/* Лаймовая (Dark) */
+[data-theme="dark"][data-color-theme="lime"] {
+    --bg-body: #1a2e05;
+    --text-main: #f7fee7;
+    --text-muted: #d9f99d;
+    --card-bg: #2d4a0a;
+    --border-color: #65a30d;
+    --nav-bg: #1a2e05;
+    --nav-text: #f7fee7;
+    --primary: #AEF26D;
+    --primary-hover: #c9f98a;
+    --grid-line: #3f6212;
+}
+
+/* Синяя (Dark) */
+[data-theme="dark"][data-color-theme="blue"] {
+    --bg-body: #172554;
+    --text-main: #eff6ff;
+    --text-muted: #bfdbfe;
+    --card-bg: #1e3a8a;
+    --border-color: #3b82f6;
+    --nav-bg: #172554;
+    --nav-text: #eff6ff;
+    --primary: #6A93D4;
+    --primary-hover: #93b5e8;
+    --grid-line: #1e40af;
+}
+
+/* Фиолетовая (Dark) */
+[data-theme="dark"][data-color-theme="purple"] {
+    --bg-body: #2e1065;
+    --text-main: #f5f3ff;
+    --text-muted: #ddd6fe;
+    --card-bg: #4c1d95;
+    --border-color: #7c3aed;
+    --nav-bg: #2e1065;
+    --nav-text: #f5f3ff;
+    --primary: #956BD6;
+    --primary-hover: #b394e0;
+    --grid-line: #5b21b6;
+}
+
+/* РОЗОВАЯ (Темная) - ОБНОВЛЕНО: Светлый фон, темный текст */
+[data-theme="dark"][data-color-theme="pink"] {
+    --bg-body: #FCE4EC;       /* Светло-розовый фон (вместо темного) */
+    --text-main: #880E4F;     /* Насыщенный темно-бордовый текст (высокий контраст) */
+    --text-muted: #AD1457;    /* Чуть более светлый бордовый для второстепенного текста */
+    --card-bg: #F8BBD0;       /* Теплый розовый для карточек (светлее фона, но цветной) */
+    --border-color: #F48FB1;  /* Яркая розовая обводка */
+    --nav-bg: #FCE4EC;
+    --nav-text: #880E4F;
+    --primary: #D81B60;       /* Насыщенная малиновая для акцентов */
+    --primary-hover: #C2185B;
+    --grid-line: #F06292;     /* Розовая сетка */
+    --shadow-sm: 0 2px 8px rgba(136, 14, 79, 0.1);
+    --shadow-md: 0 4px 12px rgba(136, 14, 79, 0.15);
+}
+
+/* =========================================
+   ОБЩИЕ СТИЛИ
+   ========================================= */
+body {
+    background-color: var(--bg-body);
+    color: var(--text-main);
+    font-family: 'Inter', sans-serif;
+    transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+h1, h2, h3, h4, .navbar-brand {
+    font-family: 'Montserrat', sans-serif;
+    color: var(--text-main);
+    transition: color 0.4s ease;
+}
+
+/* Навигация */
+.navbar {
+    background-color: var(--nav-bg) !important;
+    border-bottom: 1px solid var(--border-color);
+    transition: background-color 0.4s ease, border-color 0.4s ease;
+}
+.navbar-brand {
+    color: var(--primary) !important;
+    font-weight: 800;
+    letter-spacing: 1px;
+    font-size: 1.5rem;
+}
+.nav-link {
+    color: var(--nav-text) !important;
+    font-weight: 500;
+    font-size: 1rem;
+    transition: color 0.3s ease;
+}
+.nav-link:hover {
+    color: var(--primary) !important;
+}
+
+/* Карточки */
+.game-card, .calendar-wrapper, .progress-container, .stat-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: var(--shadow-md);
+    transition: transform 0.3s ease, background 0.4s ease, border-color 0.4s ease;
+    height: 100%;
+    color: var(--text-main);
+}
+.game-card:hover {
+    transform: translateY(-5px);
+}
+.card-desc {
+    color: var(--text-muted);
+    font-size: 1rem;
+    line-height: 1.6;
+}
+
+/* Прогресс бар */
+.progress {
+    background-color: var(--border-color);
+    height: 10px;
+    border-radius: 10px;
+    overflow: hidden;
+}
+.progress-bar {
+    background: linear-gradient(90deg, var(--primary), var(--primary-hover));
+    transition: width 0.6s ease;
+}
+
+/* Формы и модальные окна */
+.modal-content {
+    background-color: var(--card-bg);
+    color: var(--text-main);
+    border: 1px solid var(--border-color);
+}
+.form-control, .form-select {
+    background-color: var(--bg-body);
+    border-color: var(--border-color);
+    color: var(--text-main);
+    font-size: 1rem;
+}
+.form-control:focus, .form-select:focus {
+    background-color: var(--card-bg);
+    border-color: var(--primary);
+    color: var(--text-main);
+    box-shadow: 0 0 0 2px rgba(216, 27, 96, 0.2);
+}
+.btn-close {
+    filter: invert(0);
+}
+/* В новой светлой темной теме инверсия не нужна, так как фон светлый */
+[data-theme="dark"] .btn-close {
+    filter: invert(1);
+}
+[data-theme="dark"][data-color-theme="pink"] .btn-close {
+    filter: invert(0); /* Возвращаем темную кнопку для светлого фона */
+}
+
+/* Кнопки */
+.btn-primary {
+    background-color: var(--primary);
+    border-color: var(--primary);
+    color: #fff;
+}
+/* Исключение для очень светлых основных цветов или специфичных тем */
+[data-theme="light"][data-color-theme="peach"] .btn-primary,
+[data-theme="light"][data-color-theme="lime"] .btn-primary,
+[data-theme="light"][data-color-theme="pink"] .btn-primary {
+    color: #4a044e;
+    font-weight: 600;
+}
+/* Для обновленной темной розовой темы тоже нужен темный текст, так как primary теперь темнее фона, но кнопка должна быть контрастной */
+/* В данном случае primary (#D81B60) достаточно яркий, белый текст будет ок, но можно сделать темный для стиля */
+[data-theme="dark"][data-color-theme="pink"] .btn-primary {
+    color: #fff;
+    /* Если хотите темный текст на кнопке в этой теме, раскомментируйте строки ниже: */
+    /* color: #FCE4EC; */
+    /* font-weight: 700; */
+}
+
+.btn-outline-primary {
+    color: var(--primary);
+    border-color: var(--primary);
+}
+.btn-outline-primary:hover {
+    background-color: var(--primary);
+    color: #fff;
+}
+
+/* Секция обратной связи (только главная) */
+.feedback-section {
+    background-color: #1a1a1a;
+    color: #e0e0e0;
+    border-radius: 16px;
+    padding: 40px;
+    margin-top: 60px;
+    border: 1px solid #333;
+}
+.feedback-section h3 {
+    color: #fff;
+    font-family: 'Montserrat', sans-serif;
+}
+.feedback-section .form-control {
+    background-color: #2d2d2d;
+    border-color: #444;
+    color: #fff;
+}
+.feedback-section .form-control:focus {
+    background-color: #333;
+    border-color: var(--primary);
+    color: #fff;
+}
+
+/* Анимации */
+.fade-in-content {
+    animation: fadeIn 0.8s ease-in;
+}
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Полоса прокрутки (глобально) */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+::-webkit-scrollbar-track {
+    background: var(--bg-body);
+}
+::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 5px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: var(--primary);
+}

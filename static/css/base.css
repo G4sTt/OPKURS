@@ -1,0 +1,136 @@
+/* === ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ТЕМ === */
+:root {
+    /* Базовые настройки (Светлая тема по умолчанию) */
+    --bg-body: #f4f6f9;
+    --card-bg: #ffffff;
+    --text-main: #202124;
+    --text-muted: #5f6368;
+    --border-color: #dee2e6;
+    --grid-line: #dee2e6;
+    --primary: #5B68CA; /* Цвет акцентов по умолчанию */
+    --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+/* Темная база */
+[data-theme="dark"] {
+    --bg-body: #121212;
+    --card-bg: #1e1e1e;
+    --text-main: #e8eaed;
+    --text-muted: #9aa0a6;
+    --border-color: #3c4043;
+    --grid-line: #3c4043;
+    --primary: #8ab4f8;
+    --shadow-sm: 0 2px 4px rgba(0,0,0,0.3);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.4);
+}
+
+/* === ЦВЕТОВЫЕ ПОДТЕМЫ (Применяются поверх базы) === */
+
+/* Мятная */
+[data-color-theme="mint"] {
+    --primary: #60D5AC;
+    --bg-body: rgba(96, 213, 172, 0.08); /* Легкий оттенок фона */
+}
+[data-theme="dark"][data-color-theme="mint"] {
+    --bg-body: rgba(96, 213, 172, 0.05);
+    --primary: #60D5AC;
+}
+
+/* Персиковая */
+[data-color-theme="peach"] {
+    --primary: #FFCA73;
+    --bg-body: rgba(255, 202, 115, 0.08);
+}
+[data-theme="dark"][data-color-theme="peach"] {
+    --bg-body: rgba(255, 202, 115, 0.05);
+    --primary: #FFCA73;
+}
+
+/* Лаймовая */
+[data-color-theme="lime"] {
+    --primary: #AEF26D;
+    --bg-body: rgba(174, 242, 109, 0.08);
+}
+[data-theme="dark"][data-color-theme="lime"] {
+    --bg-body: rgba(174, 242, 109, 0.05);
+    --primary: #AEF26D;
+}
+
+/* Синяя */
+[data-color-theme="blue"] {
+    --primary: #6A93D4;
+    --bg-body: rgba(106, 147, 212, 0.08);
+}
+[data-theme="dark"][data-color-theme="blue"] {
+    --bg-body: rgba(106, 147, 212, 0.05);
+    --primary: #6A93D4;
+}
+
+/* Фиолетовая */
+[data-color-theme="purple"] {
+    --primary: #956BD6;
+    --bg-body: rgba(149, 107, 214, 0.08);
+}
+[data-theme="dark"][data-color-theme="purple"] {
+    --bg-body: rgba(149, 107, 214, 0.05);
+    --primary: #956BD6;
+}
+
+/* Розовая */
+[data-color-theme="pink"] {
+    --primary: #F19898;
+    --bg-body: rgba(241, 152, 152, 0.08);
+}
+[data-theme="dark"][data-color-theme="pink"] {
+    --bg-body: rgba(241, 152, 152, 0.05);
+    --primary: #F19898;
+}
+
+/* === ПРИМЕНЕНИЕ ПЕРЕМЕННЫХ К ЭЛЕМЕНТАМ === */
+body {
+    background-color: var(--bg-body);
+    color: var(--text-main);
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.card, .modal-content, .calendar-wrapper, .progress-container {
+    background-color: var(--card-bg);
+    border-color: var(--border-color);
+    color: var(--text-main);
+    box-shadow: var(--shadow-md);
+}
+
+.text-muted {
+    color: var(--text-muted) !important;
+}
+
+/* Кнопки и акценты */
+.btn-primary {
+    background-color: var(--primary) !important;
+    border-color: var(--primary) !important;
+    color: #fff;
+}
+/* Если фон слишком светлый (лайм, персик), текст кнопки должен быть темным */
+[data-color-theme="lime"] .btn-primary,
+[data-color-theme="peach"] .btn-primary {
+    color: #202124 !important;
+}
+
+.badge.bg-primary {
+    background-color: var(--primary) !important;
+    color: #fff;
+}
+
+/* Ссылки */
+a {
+    color: var(--primary);
+}
+a:hover {
+    color: var(--text-main);
+}
+
+/* Полоса прокрутки (глобально) */
+::-webkit-scrollbar-thumb {
+    background: var(--primary);
+}

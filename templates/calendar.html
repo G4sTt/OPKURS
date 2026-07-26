@@ -1,0 +1,653 @@
+{% extends "base.html" %}
+{% block title %}Календарь{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/calendar.css') }}">
+<style>
+    .calendar-wrapper {
+        height: 75vh;
+        overflow: hidden;
+        border-radius: 12px;
+    }
+
+    #calendar {
+        height: 100%;
+        overflow-y: auto;
+    }
+
+    /* Кастомный стиль полосы прокрутки */
+    #calendar::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    #calendar::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 4px;
+    }
+
+    #calendar::-webkit-scrollbar-thumb {
+        background: #c1c1c1;
+        border-radius: 4px;
+    }
+
+    #calendar::-webkit-scrollbar-thumb:hover {
+        background: #a8a8a8;
+    }
+
+    @media (max-width: 768px) {
+        .calendar-wrapper {
+            height: 70vh;
+        }
+    }
+
+    /* Дополнительные стили для контента события */
+    .fc-event-main {
+        padding: 2px 4px !important;
+        position: relative; /* Важно для абсолютного позиционирования галочки */
+        min-height: 24px;
+    }
+
+    .event-title-text {
+        font-size: 0.85rem;
+        word-break: break-word; /* Перенос по правилам орфографии/слогов */
+        white-space: normal;   /* Разрешить перенос строк */
+        overflow: hidden;
+        text-overflow: ellipsis;
+        line-height: 1.2;
+        padding-right: 20px; /* Отступ справа, чтобы текст не наезжал на галочку */
+        display: block;
+    }
+
+    .event-check-btn {
+        position: absolute;
+        top: 4px;
+        right: 4px;
+        cursor: pointer;
+        width: 16px;
+        height: 16px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 3px;
+        font-size: 11px;
+        color: #fff;
+        flex-shrink: 0;
+        z-index: 2; /* Чтобы галочка была поверх текста */
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-4">
+    <!-- Прогресс бар -->
+    <div class="progress-container mb-4 shadow-sm">
+        <div class="d-flex justify-content-between mb-2">
+            <span class="fw-bold fs-6">Прогресс сегодня</span>
+            <span class="badge bg-primary rounded-pill px-3 py-2 fs-6" id="scoreDisplay">0 XP</span>
+        </div>
+        <div class="progress" style="height: 10px; border-radius: 5px; overflow: hidden;">
+            <div id="dailyProgress"
+                 class="progress-bar progress-bar-striped position-relative"
+                 role="progressbar"
+                 style="width: 0%; min-width: 0%; transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);">
+            </div>
+        </div>
+    </div>
+
+    <!-- Календарь -->
+    <div class="calendar-wrapper shadow-sm">
+        <div id="calendar"></div>
+    </div>
+</div>
+
+<!-- ЕДИНОЕ МОДАЛЬНОЕ ОКНО (СОЗДАНИЕ / РЕДАКТИРОВАНИЕ) -->
+<div class="modal fade" id="eventModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold" id="modalTitle">Новая задача</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="eventId">
+                <input type="hidden" id="eventDone" value="false">
+
+                <!-- Название -->
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Название задачи</label>
+                    <input type="text" class="form-control form-control-lg" id="eventTitle" placeholder="Например: Сдать проект" autofocus>
+                </div>
+
+                <!-- Сложность и Опыт -->
+                <div class="row g-2 mb-3">
+                    <div class="col-7">
+                        <label class="form-label fw-semibold">Сложность</label>
+                        <select class="form-select form-select-lg" id="eventDifficulty" onchange="handleDifficultyChange()">
+                            <option value="easy">🟢 Легко (3-5 XP)</option>
+                            <option value="medium" selected>🟡 Средне (6-8 XP)</option>
+                            <option value="hard">🟠 Сложно (9-11 XP)</option>
+                            <option value="hell">🔴 Адски (12-15 XP)</option>
+                        </select>
+                    </div>
+                    <div class="col-5">
+                        <label class="form-label fw-semibold">Очки (XP)</label>
+                        <select class="form-select form-select-lg" id="eventPoints">
+                            <!-- Заполняется JS -->
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Выбор цвета -->
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Цвет задачи</label>
+                    <div class="d-flex flex-wrap gap-2" id="colorPicker"></div>
+                    <input type="hidden" id="eventColor" value="#5B68CA">
+                </div>
+
+                <!-- ДАТА И ВРЕМЯ - ТОЛЬКО 2 ПОЛЯ (datetime-local) -->
+                <div class="row mb-3 g-3">
+                    <div class="col-12">
+                        <label class="form-label fw-semibold">
+                            <i class="fas fa-play-circle me-1"></i> Начало
+                        </label>
+                        <input type="datetime-local" class="form-control form-control-lg" id="eventStartDateTime">
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label fw-semibold">
+                            <i class="fas fa-stop-circle me-1"></i> Окончание
+                        </label>
+                        <input type="datetime-local" class="form-control form-control-lg" id="eventEndDateTime">
+                    </div>
+                </div>
+
+                <!-- Быстрые кнопки -->
+                <div class="row mb-3 g-2">
+                    <div class="col-12">
+                        <label class="form-label fw-semibold small">⚡ Быстрые настройки</label>
+                        <div class="d-flex gap-2 flex-wrap">
+                            <button type="button" class="btn btn-sm btn-outline-primary" onclick="setQuickDateTime('today')">
+                                <i class="fas fa-calendar-day me-1"></i>Сегодня
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-primary" onclick="setQuickDateTime('tomorrow')">
+                                <i class="fas fa-calendar-plus me-1"></i>Завтра
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="addHours(1)">
+                                <i class="fas fa-clock me-1"></i>+1 час
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="addHours(2)">
+                                <i class="fas fa-clock me-1"></i>+2 часа
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-info" onclick="copyStartToEnd()">
+                                <i class="fas fa-copy me-1"></i>Копировать начало
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Кнопка удаления -->
+                <div id="deleteSection" class="mt-4 pt-3 border-top d-none">
+                    <button type="button" id="deleteEventBtn" class="btn btn-outline-danger w-100">
+                        <i class="fas fa-trash me-2"></i> Удалить задачу
+                    </button>
+                </div>
+            </div>
+            <div class="modal-footer bg-transparent border-0 pt-0">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Отмена</button>
+                <button type="button" class="btn btn-primary px-4" id="saveEventBtn">Сохранить</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    let calendarInstance = null;
+    let isEditMode = false;
+
+    // Цвета задач
+    const COLORS = [
+        '#562370', '#5B68CA', '#2F8DBB',
+        '#196800', '#DF7E00', '#FFA084', '#9A0505'
+    ];
+
+    // Настройки сложности
+    const DIFFICULTY_SETTINGS = {
+        'easy': { min: 3, max: 5, color: '#196800' },
+        'medium': { min: 6, max: 8, color: '#5B68CA' },
+        'hard': { min: 9, max: 11, color: '#DF7E00' },
+        'hell': { min: 12, max: 15, color: '#9A0505' }
+    };
+
+    // Инициализация палитры цветов
+    function initColorPicker() {
+        const picker = document.getElementById('colorPicker');
+        picker.innerHTML = '';
+        COLORS.forEach(color => {
+            const btn = document.createElement('div');
+            btn.style.width = '36px';
+            btn.style.height = '36px';
+            btn.style.backgroundColor = color;
+            btn.style.borderRadius = '50%';
+            btn.style.cursor = 'pointer';
+            btn.style.border = '2px solid transparent';
+            btn.style.boxShadow = '0 2px 4px rgba(0,0,0,0.2)';
+            btn.style.transition = 'transform 0.2s, border 0.2s';
+            btn.onclick = () => selectColor(color);
+            picker.appendChild(btn);
+        });
+        selectColor('#5B68CA');
+    }
+
+    // Обработка изменения сложности
+    function handleDifficultyChange() {
+        const diff = document.getElementById('eventDifficulty').value;
+        const settings = DIFFICULTY_SETTINGS[diff];
+        const pointsSelect = document.getElementById('eventPoints');
+        const currentPoints = parseInt(pointsSelect.value) || settings.min;
+
+        pointsSelect.innerHTML = '';
+        for (let i = settings.min; i <= settings.max; i++) {
+            const opt = document.createElement('option');
+            opt.value = i;
+            opt.innerText = i;
+            if (i === currentPoints) opt.selected = true;
+            pointsSelect.appendChild(opt);
+        }
+        selectColor(settings.color);
+    }
+
+    // Выбор цвета
+    function selectColor(color) {
+        document.getElementById('eventColor').value = color;
+        document.querySelectorAll('#colorPicker div').forEach(btn => {
+            const btnRgb = btn.style.backgroundColor;
+            const targetRgb = `rgb(${hexToRgb(color).r}, ${hexToRgb(color).g}, ${hexToRgb(color).b})`;
+            const isSelected = btnRgb === targetRgb || btn.style.backgroundColor === color;
+            if (isSelected) {
+                btn.style.border = '3px solid #202124';
+                btn.style.transform = 'scale(1.1)';
+            } else {
+                btn.style.border = '2px solid transparent';
+                btn.style.transform = 'scale(1)';
+            }
+        });
+    }
+
+    function hexToRgb(hex) {
+        const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        return result ? {
+            r: parseInt(result[1], 16),
+            g: parseInt(result[2], 16),
+            b: parseInt(result[3], 16)
+        } : null;
+    }
+
+    function formatDateTimeForInput(date) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        return `${year}-${month}-${day}T${hours}:${minutes}`;
+    }
+
+    function setQuickDateTime(type) {
+        const now = new Date();
+        let startDate = new Date(now);
+        let endDate = new Date(now);
+
+        if (type === 'today') {
+            startDate = new Date(now);
+            endDate.setHours(now.getHours() + 1);
+        } else if (type === 'tomorrow') {
+            startDate.setDate(now.getDate() + 1);
+            startDate.setHours(9, 0, 0);
+            endDate = new Date(startDate);
+            endDate.setHours(10, 0, 0);
+        }
+
+        document.getElementById('eventStartDateTime').value = formatDateTimeForInput(startDate);
+        document.getElementById('eventEndDateTime').value = formatDateTimeForInput(endDate);
+    }
+
+    function addHours(hours) {
+        const endInput = document.getElementById('eventEndDateTime');
+        if (endInput.value) {
+            const endDate = new Date(endInput.value);
+            endDate.setHours(endDate.getHours() + hours);
+            document.getElementById('eventEndDateTime').value = formatDateTimeForInput(endDate);
+        } else {
+            const startInput = document.getElementById('eventStartDateTime');
+            if (startInput.value) {
+                const endDate = new Date(startInput.value);
+                endDate.setHours(endDate.getHours() + hours);
+                document.getElementById('eventEndDateTime').value = formatDateTimeForInput(endDate);
+            }
+        }
+    }
+
+    function copyStartToEnd() {
+        const startValue = document.getElementById('eventStartDateTime').value;
+        if (startValue) {
+            document.getElementById('eventEndDateTime').value = startValue;
+        }
+    }
+
+    function updateProgress() {
+        fetch('/api/events')
+            .then(res => res.json())
+            .then(events => {
+                const today = new Date().toISOString().split('T')[0];
+                let totalPoints = 0;
+                events.forEach(ev => {
+                    if (ev.start && ev.start.substring(0, 10) === today && ev.done) {
+                        totalPoints += parseInt(ev.points || 0);
+                    }
+                });
+                const percentage = Math.min((totalPoints / 100) * 100, 100);
+                const progressBar = document.getElementById('dailyProgress');
+                if (progressBar) progressBar.style.width = percentage + '%';
+                const scoreDisplay = document.getElementById('scoreDisplay');
+                if (scoreDisplay) scoreDisplay.innerText = totalPoints + ' XP';
+            });
+    }
+
+    function quickToggleDone(eventId, eventObj, e) {
+        e.stopPropagation();
+        e.preventDefault();
+        const newStatus = !eventObj.extendedProps.done;
+        eventObj.setExtendedProp('done', newStatus);
+
+        fetch(`/api/events/${eventId}`, {
+            method: 'PUT',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ done: newStatus })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (!data.success) {
+                eventObj.setExtendedProp('done', !newStatus);
+                alert('Ошибка сохранения статуса');
+            } else {
+                updateProgress();
+                calendarInstance.refetchEvents();
+            }
+        })
+        .catch(err => console.error(err));
+    }
+
+    function openModal(isEdit, eventObj = null, selectInfo = null) {
+        isEditMode = isEdit;
+        const modalTitle = document.getElementById('modalTitle');
+        const deleteSection = document.getElementById('deleteSection');
+
+        document.getElementById('eventId').value = '';
+        document.getElementById('eventTitle').value = '';
+        document.getElementById('eventDone').value = 'false';
+
+        if (isEdit && eventObj) {
+            modalTitle.innerHTML = '<i class="fas fa-edit me-2"></i>Редактирование задачи';
+            deleteSection.classList.remove('d-none');
+
+            document.getElementById('eventId').value = eventObj.id;
+            document.getElementById('eventTitle').value = eventObj.title;
+            document.getElementById('eventDone').value = eventObj.extendedProps.done;
+
+            const startDate = new Date(eventObj.start);
+            const endDate = new Date(eventObj.end);
+            document.getElementById('eventStartDateTime').value = formatDateTimeForInput(startDate);
+            document.getElementById('eventEndDateTime').value = formatDateTimeForInput(endDate);
+
+            const diff = eventObj.extendedProps.difficulty || 'medium';
+            document.getElementById('eventDifficulty').value = diff;
+            handleDifficultyChange();
+            document.getElementById('eventPoints').value = eventObj.extendedProps.points;
+
+            selectColor(eventObj.extendedProps.color || '#5B68CA');
+
+        } else {
+            modalTitle.innerHTML = '<i class="fas fa-plus me-2"></i>Создание задачи';
+            deleteSection.classList.add('d-none');
+
+            document.getElementById('eventDifficulty').value = 'medium';
+            handleDifficultyChange();
+
+            if (selectInfo && selectInfo.startStr) {
+                const start = new Date(selectInfo.startStr);
+                const end = new Date(selectInfo.endStr);
+                document.getElementById('eventStartDateTime').value = formatDateTimeForInput(start);
+                document.getElementById('eventEndDateTime').value = formatDateTimeForInput(end);
+            } else {
+                const now = new Date();
+                const inOneHour = new Date(now.getTime() + 60 * 60 * 1000);
+                document.getElementById('eventStartDateTime').value = formatDateTimeForInput(now);
+                document.getElementById('eventEndDateTime').value = formatDateTimeForInput(inOneHour);
+            }
+        }
+
+        const modal = new bootstrap.Modal(document.getElementById('eventModal'));
+        modal.show();
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        initColorPicker();
+
+        const calendarEl = document.getElementById('calendar');
+        if (!calendarEl) return;
+
+        calendarInstance = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'timeGridWeek',
+            locale: 'ru',
+            firstDay: 1,
+            timeZone: 'local',
+            headerToolbar: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek,timeGridDay'
+            },
+            slotMinTime: "00:00:00",
+            slotMaxTime: "24:00:00",
+            slotDuration: "00:30:00",
+            nowIndicator: true,
+            selectable: true,
+            selectMirror: true,
+            height: 'auto',
+            editable: true,
+            eventResizableFromStart: true,
+
+            select: function(info) {
+                openModal(false, null, info);
+                calendarInstance.unselect();
+            },
+
+            eventClick: function(info) {
+                openModal(true, info.event);
+                info.jsEvent.preventDefault();
+            },
+
+            eventDrop: function(info) {
+                updateEventTime(info.event);
+            },
+
+            eventResize: function(info) {
+                updateEventTime(info.event);
+            },
+
+            eventContent: function(arg) {
+                const isDone = arg.event.extendedProps.done;
+
+                // Создаем контейнер с относительным позиционированием
+                const container = document.createElement('div');
+                container.className = 'fc-event-main';
+                container.style.position = 'relative';
+                container.style.width = '100%';
+                container.style.height = '100%';
+                container.style.display = 'block';
+
+                // Текст задачи
+                const titleSpan = document.createElement('span');
+                titleSpan.className = 'event-title-text';
+                titleSpan.innerText = arg.event.title;
+                if (isDone) titleSpan.style.textDecoration = 'line-through';
+                if (isDone) titleSpan.style.opacity = '0.8';
+
+                // Галочка (абсолютное позиционирование)
+                const checkBtn = document.createElement('span');
+                checkBtn.className = 'event-check-btn';
+
+                const bgColor = isDone ? 'rgba(255,255,255,0.4)' : 'transparent';
+                const borderColor = 'rgba(255,255,255,0.8)';
+
+                checkBtn.style.backgroundColor = bgColor;
+                checkBtn.style.border = '2px solid ' + borderColor;
+
+                if (isDone) checkBtn.innerHTML = '✓';
+
+                checkBtn.onclick = (e) => quickToggleDone(arg.event.id, arg.event, e);
+
+                container.appendChild(titleSpan);
+                container.appendChild(checkBtn);
+
+                return { domNodes: [container] };
+            },
+
+            eventDidMount: function(info) {
+                const color = info.event.extendedProps.color || '#5B68CA';
+                info.el.style.backgroundColor = color;
+                info.el.style.borderColor = color;
+                info.el.style.borderRadius = '6px';
+                // Убираем стандартные отступы FullCalendar, чтобы наш контент занимал всё место
+                info.el.style.padding = '0';
+                info.el.style.overflow = 'visible';
+            },
+
+            events: function(fetchInfo, successCallback, failureCallback) {
+                fetch('/api/events')
+                    .then(res => res.json())
+                    .then(data => {
+                        const events = data.map(ev => ({
+                            id: ev.id,
+                            title: ev.title,
+                            start: ev.start,
+                            end: ev.end,
+                            allDay: ev.allDay || false,
+                            extendedProps: {
+                                difficulty: ev.difficulty,
+                                points: ev.points,
+                                done: ev.done,
+                                color: ev.color || '#5B68CA'
+                            }
+                        }));
+                        successCallback(events);
+                    })
+                    .catch(err => failureCallback(err));
+            }
+        });
+
+        calendarInstance.render();
+        updateProgress();
+
+        document.getElementById('saveEventBtn').addEventListener('click', function() {
+            const title = document.getElementById('eventTitle').value.trim();
+            if (!title) {
+                alert('Пожалуйста, введите название задачи');
+                document.getElementById('eventTitle').focus();
+                return;
+            }
+
+            let startVal = document.getElementById('eventStartDateTime').value;
+            let endVal = document.getElementById('eventEndDateTime').value;
+
+            if (!startVal) {
+                alert('Пожалуйста, укажите дату и время начала');
+                return;
+            }
+            if (!endVal) {
+                alert('Пожалуйста, укажите дату и время окончания');
+                return;
+            }
+
+            if (startVal && startVal.length === 16) startVal += ':00';
+            if (endVal && endVal.length === 16) endVal += ':00';
+
+            const eventId = document.getElementById('eventId').value;
+            const payload = {
+                title: title,
+                start: startVal,
+                end: endVal,
+                difficulty: document.getElementById('eventDifficulty').value,
+                points: parseInt(document.getElementById('eventPoints').value),
+                color: document.getElementById('eventColor').value,
+                allDay: false,
+                done: document.getElementById('eventDone').value === 'true'
+            };
+
+            const url = eventId ? `/api/events/${eventId}` : '/api/events';
+            const method = eventId ? 'PUT' : 'POST';
+
+            fetch(url, {
+                method: method,
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(payload)
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    bootstrap.Modal.getInstance(document.getElementById('eventModal')).hide();
+                    calendarInstance.refetchEvents();
+                    updateProgress();
+                    if (!eventId) {
+                        document.getElementById('eventTitle').value = '';
+                    }
+                } else {
+                    alert('Ошибка: ' + (data.error || 'Не удалось сохранить'));
+                }
+            })
+            .catch(err => {
+                console.error('Save error:', err);
+                alert('Ошибка соединения с сервером');
+            });
+        });
+
+        document.getElementById('deleteEventBtn').addEventListener('click', function() {
+            const eventId = document.getElementById('eventId').value;
+            if (!eventId) return;
+
+            if (confirm('Вы уверены, что хотите удалить эту задачу?')) {
+                fetch(`/api/events/${eventId}`, { method: 'DELETE' })
+                    .then(() => {
+                        bootstrap.Modal.getInstance(document.getElementById('eventModal')).hide();
+                        calendarInstance.refetchEvents();
+                        updateProgress();
+                    })
+                    .catch(err => console.error('Delete error:', err));
+            }
+        });
+    });
+
+    function updateEventTime(eventObj) {
+        const startStr = eventObj.start.toISOString();
+        const endStr = eventObj.end ? eventObj.end.toISOString() : null;
+
+        fetch(`/api/events/${eventObj.id}`, {
+            method: 'PUT',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                start: startStr,
+                end: endStr
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (!data.success) {
+                alert('Ошибка сохранения времени');
+                calendarInstance.refetchEvents();
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            calendarInstance.refetchEvents();
+        });
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,18 @@
+# Секреты
+.env
+.env.local
+
+# Виртуальное окружение
+.venv/
+venv/
+
+# Настройки IDE
+.idea/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+#бд
+events.db

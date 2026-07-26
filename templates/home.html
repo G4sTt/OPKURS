@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block title %}Главная{% endblock %}
+
+{% block content %}
+<div class="text-center py-5">
+    <h1 class="display-4 fw-bold mb-3">Управляй временем играючи</h1>
+    <p class="lead card-desc mb-5" style="max-width: 700px; margin: 0 auto;">
+        Horizon превращает рутину в RPG. Выполняй задачи, получай опыт и повышай уровень.
+        Твой прогресс зависит только от тебя.
+    </p>
+
+    {% if current_user.is_authenticated %}
+        <!-- Блок для авторизованного пользователя -->
+        <div class="mb-4">
+            <h3 class="text-success mb-3">С возвращением, {{ current_user.name }}! 👋</h3>
+            <p class="mb-4">Твои задачи ждут тебя.</p>
+        </div>
+        <a href="/calendar" class="btn btn-primary btn-lg px-5 rounded-pill shadow-sm">
+            <i class="fas fa-calendar-check me-2"></i> Перейти к календарю
+        </a>
+        <div class="mt-3">
+            <a href="/stats" class="btn btn-outline-primary btn-sm rounded-pill">
+                <i class="fas fa-chart-bar me-1"></i> Моя статистика
+            </a>
+        </div>
+    {% else %}
+        <!-- Блок для гостей -->
+        <div class="d-flex justify-content-center gap-3 flex-wrap">
+            <a href="/login" class="btn btn-primary btn-lg px-5 rounded-pill shadow-sm">
+                <i class="fas fa-sign-in-alt me-2"></i> Войти
+            </a>
+            <a href="/register" class="btn btn-outline-light btn-lg px-5 rounded-pill border border-white-50">
+                <i class="fas fa-user-plus me-2"></i> Регистрация
+            </a>
+        </div>
+    {% endif %}
+</div>
+
+<div class="row g-4 mt-2 mb-5">
+    <div class="col-md-4">
+        <div class="game-card text-center">
+            <div class="mb-3 text-primary"><i class="fas fa-calendar-alt fa-3x"></i></div>
+            <h3>Планируй</h3>
+            <p class="card-desc">Красивая сетка месяца, недели и дня для полного контроля.</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="game-card text-center">
+            <div class="mb-3 text-warning"><i class="fas fa-gem fa-3x"></i></div>
+            <h3>Зарабатывай XP</h3>
+            <p class="card-desc">Назначай награду за сложность. Каждый уровень сложнее предыдущего.</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="game-card text-center">
+            <div class="mb-3 text-success"><i class="fas fa-chart-line fa-3x"></i></div>
+            <h3>Прогресс</h3>
+            <p class="card-desc">Следи за заполнением шкалы дня и своей статистикой.</p>
+        </div>
+    </div>
+</div>
+
+<!-- Секция обратной связи (ТОЛЬКО ЗДЕСЬ) -->
+<div class="feedback-section shadow-lg">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 text-center">
+            <h3 class="mb-4"><i class="fas fa-envelope me-2"></i> Обратная связь</h3>
+            <p class="mb-4 text-white-50">Есть идеи или нашли ошибку? Напишите нам!</p>
+            <form onsubmit="event.preventDefault(); alert('Спасибо! Сообщение отправлено.'); this.reset();">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <input type="text" class="form-control" placeholder="Ваше имя" required>
+                    </div>
+                    <div class="col-md-6">
+                        <input type="email" class="form-control" placeholder="Email" required>
+                    </div>
+                    <div class="col-12">
+                        <textarea class="form-control" rows="4" placeholder="Ваше сообщение..." required></textarea>
+                    </div>
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-primary px-5 py-2 rounded-pill">Отправить</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

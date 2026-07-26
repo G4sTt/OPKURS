@@ -1,0 +1,12 @@
+FROM python:3.11-slim
+
+# 🔹 Добавь эту строку:
+RUN apt-get update && apt-get install -y ca-certificates && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+COPY OPKURS-main .
+
+EXPOSE 5000
+CMD ["python", "app.py"]
